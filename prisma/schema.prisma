@@ -1,0 +1,230 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  id                String  @id @default(cuid()) @map("_id")
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid()) @map("_id")
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid()) @map("_id")
+  username          String
+  email         String    @unique
+  phone         String?
+  password      String
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  article       Article[]
+  Comment       Comment[]
+  dep           Department      @relation(fields: [depName], references: [name])
+  depName       String
+  startDate     StartDate[]
+  bio           Bio[]
+  salary        Salary[]
+  Event         Event[]
+  vacancy       Vacancy[]
+  role          String?
+  createdAt     DateTime
+}
+
+model StartDate {
+  id            String    @id @default(cuid()) @map("_id")
+  date          DateTime?
+  user          User      @relation(fields: [userId], references: [id])
+  userId        String
+}
+
+model Salary {
+  id            String    @id @default(cuid()) @map("_id")
+  salary        Int?
+  user          User      @relation(fields: [userId], references: [id])
+  userId        String
+}
+
+model Bio {
+  id            String    @id @default(cuid()) @map("_id")
+  bio String?
+  user           User      @relation(fields: [userId], references: [id])
+  userId         String
+}
+
+model VerificationToken {
+  identifier String   @id @map("_id")
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Category {
+  id    String  @id @default(cuid()) @map("_id")
+  slug  String  @unique
+  title String
+  description String
+  visitors Int      @default(0)
+  img   String
+  article Article[]
+}
+
+model Department {
+  id    String  @id @default(cuid()) @map("_id")
+  name  String  @unique
+  description String
+  code   String?
+  User User[]
+  roles Roles[]
+}
+
+model Roles {
+  id    String  @id @default(cuid()) @map("_id")
+  name  String  @unique
+  description String
+  code   String?
+  dep           Department      @relation(fields: [depName], references: [name])
+  depName  String
+}
+
+
+model Article {
+  id                  String   @id @default(cuid()) @map("_id")
+  img                 String?
+  video               String?
+  featuredImg         Images[]
+  featuredVideo       Video[]
+  title               String
+  content             String
+  authorId            String
+  authorName          String
+  slug                String    @unique
+  catSlug             String
+  publishDate         DateTime @default(now())
+  views               Int      @default(0)
+  likes               Int      @default(0)
+  shares              Int      @default(0)
+  commentsCount       Int      @default(0)
+  socialMediaMentions Int      @default(0)
+  tags                String[]
+  comments            Comment[]
+  isTrending          Boolean  @default(false)
+  isEditorsPick       Boolean  @default(false)
+  isFeatured          Boolean  @default(false)
+  isAnnouncement      Boolean  @default(false)
+  isGossip            Boolean  @default(false)
+  isEditorial         Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  genderId            String?
+  
+  cat                 Category  @relation(fields: [catSlug], references: [slug])
+  author              User @relation(fields: [authorId], references: [id])
+  gender              Gender? @relation(fields: [genderId], references: [id])
+}
+
+model Quotes {
+  id        String   @id @default(cuid()) @map("_id")
+  content      String
+  author       String
+ createdAt     DateTime @default(now())
+}
+
+model Gender {
+  id        String   @id @default(cuid()) @map("_id")
+  type      String   @unique
+  img       String?
+  article   Article[]
+}
+
+
+model Images {
+  id        String   @id @default(cuid()) @map("_id")
+  url       String
+  articleId String
+  article   Article     @relation(fields: [articleId], references: [id])
+}
+
+model Video {
+  id        String   @id @default(cuid()) @map("_id")
+  url       String
+  articleId String
+  article   Article     @relation(fields: [articleId], references: [id])
+}
+
+
+model Comment {
+  id        String   @id @default(cuid()) @map("_id")
+  createdAt DateTime @default(now())
+  desc      String
+  userEmail String
+  user      User     @relation(fields: [userEmail], references: [email])
+  articleSlug  String
+  article      Article     @relation(fields: [articleSlug], references: [slug])
+}
+
+
+type Address {
+  street String
+  city   String
+  state  String
+  zip    String
+}
+
+model Event {
+  id           String   @id @default(cuid()) @map("_id")
+  title       String
+  location    String
+  description String
+  startDate   DateTime
+  endDate     DateTime
+  startTime   String
+  img         String?
+  video       String?
+  userEmail   String
+  user        User     @relation(fields: [userEmail], references: [email])
+  createdAt DateTime @default(now())
+}
+
+model Vacancy {
+  id           String   @id @default(cuid()) @map("_id")
+  title       String
+  location    String
+  content     String
+  startDate   DateTime
+  endDate     DateTime
+  jobType     String
+  company     String
+  address     String
+  userId      String
+  link      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
