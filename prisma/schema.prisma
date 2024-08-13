@@ -45,7 +45,6 @@ model User {
   accounts      Account[]
   sessions      Session[]
   article       Article[]
-  Comment       Comment[]
   dep           Department      @relation(fields: [depName], references: [name])
   depName       String
   startDate     StartDate[]
@@ -185,9 +184,10 @@ model Comment {
   createdAt DateTime @default(now())
   desc      String
   userEmail String
-  user      User     @relation(fields: [userEmail], references: [email])
-  articleSlug  String
-  article      Article     @relation(fields: [articleSlug], references: [slug])
+  articleId  String
+  flagged     Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+  article      Article     @relation(fields: [articleId], references: [id])
 }
 
 

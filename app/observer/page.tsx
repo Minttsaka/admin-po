@@ -1,3 +1,4 @@
+import AttentionPosts from "@/components/AttentionPosts";
 import DashboardEditorPick from "@/components/DashboardEditorPick";
 import DashboardEvents from "@/components/DashboardEvents";
 import DashboardSubscribers from "@/components/DashboardSubscribers";
@@ -13,6 +14,7 @@ export default async function Home() {
       
       <div className="w-full">
         <DashboardCards />
+        <AttentionPosts />
         <DashboardEvents />
         <DashboardEditorPick />
         <DashboardSubscribers />
