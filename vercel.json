@@ -4,8 +4,7 @@
         "DATABASE_URL": "mongodb+srv://minttsaka:proffessor@node-express-tutorial.qnwul9z.mongodb.net/poly-observer?retryWrites=true&w=majority&appName=node-express-tutorial"
       },
       "commands": {
-        "build": "npm run build", 
-        "postinstall": "npx prisma generate"
+        "build": "npm run build"
       }
     }
   }
